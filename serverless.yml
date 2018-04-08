@@ -6,17 +6,24 @@ provider:
   memorySize: 1536
   timeout: 180
   # if needed (e.g. upload snapshot)
-  # iamRoleStatements:
-  #  -  Effect: "Allow"
-  #     Action:
-  #       - "s3:PutObject"
-  #     Resource: "arn:aws:s3:::<bucket name>/*"  
+  iamRoleStatements:
+  -  Effect: "Allow"
+     Action:
+       - "s3:GetObject"
+     Resource: "arn:aws:s3:::chrome-for-lambda/*"
+  -  Effect: "Allow"
+     Action:
+       - "s3:PutObject"
+     Resource: "arn:aws:s3:::puppeteer-lambda-aaa/*"  
 
 functions:
   test-function:
     handler: index.handler
     environment:
-      DEBUG: 0
+      DEBUG: 1
+      FONTCONFIG_BUCKET: chrome-for-lambda
+      LD_LIBRARY_PATH: /tmp/fontconfig/usr/lib/
+      FONTCONFIG_PATH: /tmp/fontconfig/etc/fonts/
 
 package:
   artifact: ./package.zip

@@ -15,21 +15,34 @@ exports.run = async (browser) => {
   // implement here
   // this is sample
   const page = await browser.newPage();
-  await page.goto('https://www.google.co.jp',
-   {waitUntil: ['domcontentloaded', 'networkidle0']}
-  );
+  await page.goto('https://zh.wikipedia.org/wiki/%E6%97%A5%E8%AF%AD');
+  /*
   console.log((await page.content()).slice(0, 500));
 
   await page.type('#lst-ib', 'aaaaa');
   // avoid to timeout waitForNavigation() after click()
   await Promise.all([
-    // avoid to
+    // avoid to 
     // 'Cannot find context with specified id undefined' for localStorage
     page.waitForNavigation(),
     page.click('[name=btnK]'),
   ]);
+  */
 
-/* screenshot
+  await screenshot(page, 'aaaaa.png');
+
+  // cookie and localStorage
+  await page.setCookie({name: 'name', value: 'cookieValue'});
+  console.log(await page.cookies());
+  console.log(await page.evaluate(() => {
+    localStorage.setItem('name', 'localStorageValue');
+    return localStorage.getItem('name');
+  }));
+  await page.close();
+  return 'done';
+};
+
+const screenshot = async (page, key) => {
   await page.screenshot({path: '/tmp/screenshot.png'});
   const aws = require('aws-sdk');
   const s3 = new aws.S3({apiVersion: '2006-03-01'});
@@ -41,19 +54,8 @@ exports.run = async (browser) => {
     });
   });
   await s3.putObject({
-    Bucket: '<bucket name>',
-    Key: 'screenshot.png',
+    Bucket: 'puppeteer-lambda-aaa',
+    Key: key,
     Body: screenshot,
   }).promise();
-*/
-
-  // cookie and localStorage
-  await page.setCookie({name: 'name', value: 'cookieValue'});
-  console.log(await page.cookies());
-  console.log(await page.evaluate(() => {
-    localStorage.setItem('name', 'localStorageValue');
-    return localStorage.getItem('name');
-  }));
-  await page.close();
-  return 'done';
 };

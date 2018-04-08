@@ -9,6 +9,7 @@ exports.getBrowser = (() => {
   let browser;
   return async () => {
     if (typeof browser === 'undefined' || !await isBrowserAvailable(browser)) {
+      await setupFontconfig();
       await setupChrome();
       browser = await puppeteer.launch({
         headless: true,
@@ -89,6 +90,27 @@ const setupS3Chrome = () => {
     .on('end', () => resolve());
   });
 };
+
+const setupFontconfig = () => {
+  return new Promise((resolve, reject) => {
+    if (!config.fontconfigS3Bucket) {
+      return resolve();
+    }
+    const params = {
+      Bucket: config.fontconfigS3Bucket,
+      Key: config.fontconfigS3Key,
+    };
+    s3.getObject(params)
+    .createReadStream()
+    .on('error', (err) => reject(err))
+    .pipe(tar.x({
+      C: config.setupFontconfigPath,
+    }))
+    .on('error', (err) => reject(err))
+    .on('end', () => resolve());
+  });
+};
+
 
 const debugLog = (log) => {
   if (config.DEBUG) {

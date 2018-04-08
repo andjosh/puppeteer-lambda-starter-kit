@@ -19,6 +19,10 @@ const executablePath = path.join(
     'headless_shell'
 );
 
+const fontconfigS3Bucket = process.env.FONTCONFIG_BUCKET;
+const fontconfigS3Key = process.env.FONTCONFIG_KEY || 'fontconfig.tar.gz';
+const setupFontconfigPath = path.join(path.sep, 'tmp');
+
 const DEBUG = process.env.DEBUG;
 
 module.exports = {
@@ -28,5 +32,8 @@ module.exports = {
     remoteChromeS3Key,
     setupChromePath,
     executablePath,
+    fontconfigS3Bucket,
+    fontconfigS3Key,
+    setupFontconfigPath,
     DEBUG,
 };
